@@ -3,6 +3,7 @@ import threading
 import signal
 import os
 import ctypes
+import shutil
 from datetime import datetime
 from pathlib import Path
 
@@ -20,8 +21,25 @@ from ui import UiController
 
 
 def _default_db_path() -> Path:
-    base = Path(__file__).resolve().parent
-    return base / "lembrete.db"
+    appdata = os.environ.get("APPDATA")
+    if appdata:
+        base = Path(appdata)
+    else:
+        base = Path.home() / "AppData" / "Roaming"
+
+    data_dir = base / "Lembretes"
+    data_dir.mkdir(parents=True, exist_ok=True)
+
+    db_path = data_dir / "lembrete.db"
+
+    local_db = Path(__file__).resolve().parent / "lembrete.db"
+    if not db_path.exists() and local_db.is_file():
+        try:
+            shutil.copy2(local_db, db_path)
+        except OSError:
+            pass
+
+    return db_path
 
 
 def _make_icon_image():
@@ -74,7 +92,7 @@ class App:
 
     def _show_overdue_on_startup(self) -> None:
         now = datetime.now()
-        due = self._db.get_due_unnotified(now)
+        due = [r for r in self._db.get_pending() if r.due_at <= now]
         if not due:
             return
 
