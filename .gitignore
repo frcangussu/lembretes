@@ -1,0 +1,12 @@
+.venv/
+__pycache__/
+*.pyc
+
+lembrete.db
+
+build/
+dist/
+dist-installer/
+*.spec
+
+*.log
