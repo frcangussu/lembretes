@@ -1,5 +1,8 @@
 import sys
 import threading
+import signal
+import os
+import ctypes
 from datetime import datetime
 from pathlib import Path
 
@@ -109,7 +112,50 @@ class App:
 
 def main() -> int:
     app = App()
-    app.run()
+
+    exit_requested = threading.Event()
+
+    def _request_exit() -> None:
+        if exit_requested.is_set():
+            return
+        exit_requested.set()
+        try:
+            app._exit()
+        finally:
+            os._exit(0)
+
+    def _handle_exit_signal(_signum, _frame):
+        _request_exit()
+
+    try:
+        signal.signal(signal.SIGINT, _handle_exit_signal)
+    except Exception:
+        pass
+
+    if hasattr(signal, "SIGTERM"):
+        try:
+            signal.signal(signal.SIGTERM, _handle_exit_signal)
+        except Exception:
+            pass
+
+    if sys.platform == "win32":
+        try:
+            handler_type = ctypes.WINFUNCTYPE(ctypes.c_bool, ctypes.c_uint)
+
+            def _console_handler(ctrl_type: int) -> bool:
+                if ctrl_type in {0, 2}:  # CTRL_C_EVENT, CTRL_CLOSE_EVENT
+                    threading.Thread(target=_request_exit, daemon=True).start()
+                    return True
+                return False
+
+            ctypes.windll.kernel32.SetConsoleCtrlHandler(handler_type(_console_handler), True)
+        except Exception:
+            pass
+
+    try:
+        app.run()
+    except KeyboardInterrupt:
+        _request_exit()
     return 0
 
 

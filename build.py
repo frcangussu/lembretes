@@ -95,6 +95,13 @@ def main(argv: list[str]) -> int:
     iscc = _find_iscc()
     _run([str(iscc), str(installer_iss)], cwd=REPO_ROOT)
 
+    out_dir = REPO_ROOT / "dist-installer"
+    if out_dir.exists():
+        try:
+            os.startfile(str(out_dir))
+        except OSError:
+            subprocess.run(["explorer", str(out_dir)])
+
     return 0
 
 
