@@ -52,5 +52,5 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            dist-installer/*.exe
+            installer/*.exe
             dist/Lembretes.exe

@@ -6,7 +6,7 @@ lembrete.db
 
 build/
 dist/
-dist-installer/
+installer/
 *.spec
 
 *.log

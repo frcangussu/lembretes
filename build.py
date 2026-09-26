@@ -95,7 +95,7 @@ def main(argv: list[str]) -> int:
     iscc = _find_iscc()
     _run([str(iscc), str(installer_iss)], cwd=REPO_ROOT)
 
-    out_dir = REPO_ROOT / "dist-installer"
+    out_dir = REPO_ROOT / "installer"
     if out_dir.exists():
         try:
             os.startfile(str(out_dir))
