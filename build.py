@@ -16,13 +16,22 @@ def _run(cmd: list[str], cwd: Path) -> None:
 
 
 def _find_iscc() -> Path:
-    candidates = [
-        Path(os.environ.get("INNOSETUP_ISCC", "")),
-        Path(r"C:\Program Files\Inno Setup 7\ISCC.exe"),
-        Path(r"C:\Program Files (x86)\Inno Setup 7\ISCC.exe"),
-    ]
+    env_path = os.environ.get("INNOSETUP_ISCC")
+    candidates = []
+    if env_path:
+        candidates.append(Path(env_path))
+
+    candidates.extend(
+        [
+            Path(r"C:\Program Files\Inno Setup 7\ISCC.exe"),
+            Path(r"C:\Program Files (x86)\Inno Setup 7\ISCC.exe"),
+            Path(r"C:\Program Files\Inno Setup 6\ISCC.exe"),
+            Path(r"C:\Program Files (x86)\Inno Setup 6\ISCC.exe"),
+        ]
+    )
+
     for c in candidates:
-        if str(c) and c.exists():
+        if c.is_file():
             return c
     raise FileNotFoundError(
         "ISCC.exe não encontrado. Defina a variável INNOSETUP_ISCC ou instale o Inno Setup."

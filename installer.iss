@@ -19,8 +19,9 @@ OutputDir=dist-installer
 OutputBaseFilename={#MyAppName}-Setup-{#MyAppVersion}
 Compression=lzma
 SolidCompression=yes
-ArchitecturesAllowed=x64
-ArchitecturesInstallIn64BitMode=x64
+ArchitecturesAllowed=x64compatible
+ArchitecturesInstallIn64BitMode=x64compatible
+UsedUserAreasWarning=no
 
 [Tasks]
 Name: "startup"; Description: "Iniciar com o Windows"; Flags: unchecked
