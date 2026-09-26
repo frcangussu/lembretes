@@ -58,6 +58,7 @@ class UiController:
             win.title("Lembretes pendentes")
             win.geometry("650x360")
             win.protocol("WM_DELETE_WINDOW", win.withdraw)
+            win.bind("<Escape>", lambda _e: (win.withdraw(), "break")[1])
 
             cols = ("done", "title", "due")
             tree = ttk.Treeview(win, columns=cols, show="headings", selectmode="browse")
